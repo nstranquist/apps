@@ -1,5 +1,5 @@
 export interface AppData {
-  id: string;
+  _id: string;
   title: string;
   description: string;
   website: string;

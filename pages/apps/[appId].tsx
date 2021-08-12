@@ -18,17 +18,22 @@ const Home: NextPage = () => {
     async function loadAppData() {
       setErrors(null)
       setLoading(true)
-      await fetch(`/api/apps/${appId}`)
-        .then(res => res.json())
-        .then(data => {
-          setAppData(data)
-          setLoading(false)
-        })
-        .catch(err => {
-          console.error(err)
-          setErrors(err.message);
-          setLoading(false)
-        })
+      try {
+        const response = await fetch(`/api/apps/${appId}`)
+        const data = await response.json()
+        if(response.status === 404) {
+          throw new Error(data.message || 'App data not found')
+        }
+        console.log('data:', data)
+        setAppData(data[0])
+        setLoading(false)
+      }
+      catch (err) {
+        console.log(err.message)
+        setErrors(err.message);
+        setLoading(false)
+      }
+
     }
 
     if(appId)
@@ -56,7 +61,7 @@ const Home: NextPage = () => {
       {/* If app data is loaded, render it */}
       {appData && (
         <div className="app-data-container">
-          <h1>{appData.title} - {appData.id}</h1>
+          <h1>{appData.title}</h1>
           <p>{appData.description}</p>
           <a href={appData.website}>{appData.website}</a>
         </div>
